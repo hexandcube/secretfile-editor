@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hexandcube's Secretfile Editor</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/fonts/mont/mont.css">
+    <link rel="stylesheet" href="assets/fonts/font-awesome/css/all.min.css">
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="assets/swal/swal.js"></script>
+    <link rel="stylesheet" href="assets/swal/dark.css">
+</head>
+
+<body data-bs-theme="dark">
+
+    <header>
+        <div class="container">
+            <h1 class="d-inline align-middle">Hexandcube's Secretfile Editor </h1>
+            <span class="badge rounded-pill text-bg-info fs-6 ml-5" id="version"><i
+                    class="fa-solid fa-spinner fa-spin"></i></span>
+            <p>This simple app is an easy way to create, view, and edit Hexandcube Secretfiles, which
+                store 2FA OTP secrets in a safe and easy to access way.</p>
+        </div>
+        </p>
+    </header>
+    <div class="container">
+        <noscript>
+        <br>
+        <div class="alert alert-danger alertEmpty" role="alert">
+            <b><i class="fa-solid fa-circle-exclamation"></i> Your browser doesn't support JavaScript or scripts are
+                being blocked!</b>
+            <p>This app is written in JavaScript, and won't work without it.</p>
+        </div>
+    </noscript>
+        <br>
+        <nav class="nav nav-tabs nav-justified">
+            <a class="nav-link active fs-4 fw-bold" aria-current="page" href="#" data-bs-toggle="tab"
+                data-bs-target="#pane-editor">Editor</a>
+            <a class="nav-link fs-4 fw-bold" href="#" data-bs-toggle="tab" data-bs-target="#pane-viewer">Viewer</a>
+            <a class="nav-link fs-4 fw-bold" href="#" data-bs-toggle="tab" data-bs-target="#pane-about">About</a>
+        </nav>
+        <div class="tab-content">
+            <section class="card tab-pane active" id="pane-editor" role="tabpanel">
+                <h2 class="card-header">Secretfile Editor</h2>
+                <div class="card-body" id="editor">
+                    <div id="editor-entries">
+                        <div class="alert alert-info alertEmpty" role="alert">
+                            Your new secretfile has no entries! Click the button below to add one, or load an existing
+                            file to edit it.
+                        </div>
+                    </div>
+                    <a class="btn btn-primary" onclick="addEntry()"><i class="fa-solid fa-circle-plus"></i> Add
+                        Entry</a>
+                    <a class="btn btn-success" data-bs-toggle="modal" data-bs-target="#LoadForm"><i
+                            class="fa-solid fa-folder-open"></i> Open Secretfile</a>
+                    <a class="btn btn-success" data-bs-toggle="modal" data-bs-target="#SaveForm"><i
+                            class="fa-solid fa-floppy-disk"></i> Save Secretfile</a>
+                    <a class="btn btn-danger" onclick="clearSecretfile()"><i class="fa-solid fa-trash-can"></i> Clear
+                        Secretfile</a>
+                </div>
+            </section>
+            <section class="card tab-pane" id="pane-viewer" role="tabpanel">
+                <h2 class="card-header">Secretfile Viewer</h2>
+                <div class="card-body" id="pane">
+                    <div id="viewer-entries">
+                        <div class="alert alert-info alertEmpty" role="alert">
+                            The viewer is empty! Click the button below to open an existing Secretfile.
+                        </div>
+                    </div>
+                    <a class="btn btn-success d-grid " data-bs-toggle="modal" data-bs-target="#LoadFormViewer"><i
+                            class="fa-solid fa-folder-open"></i> Open Secretfile</a>
+                    <div class="muted text-center mt-2">If you want to edit this secret file, switch to the Editor tab.
+                        <div />
+                    </div>
+            </section>
+            <section class="card tab-pane" id="pane-about" role="tabpanel">
+                <h2 class="card-header">About Secretfile Editor</h2>
+                <div class="card-body">
+                    <p>Secretfile editor is a simple tool that allows you to create, edit and view secretfiles - a
+                        special file format
+                        used for backing up 2FA OTP secrets. Secretfiles store the OTP secret, account name, and login.
+                        They can
+                        be encrypted with a passphrase (using AES-256).</p>
+                    <p>Secretfile editor has 2 modules:
+                        <ul>
+                            <li>Editor - allows you to create, edit, and save secretfiles.</li>
+                            <li>Viewer - allows you to view secretfiles, and easily import entries to your authenticator
+                                app.</li>
+                        </ul>
+                    </p>
+                    <p>Secretfile editor is fully open source. The source code is available to view on <a
+                            href="https://github.com/hexandcube/secretfile-editor">GitHub</a>.</p>
+                </div>
+            </section>
+        </div>
+    </div>
+    <div class="modal" id="LoadForm" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Load Secretfile</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="secretfile-load-file" class="form-label">Secretfile:</label>
+                        <input class="form-control" type="file" id="secretfile-load-file" accept=".secretfile.json">
+                    </div>
+                    <div class="hidden" id="secretfile-load-passphrase-div">
+                        <label for="secretfile-load-passphrase">Decryption passphrase:</label>
+                        <input type="password" class="form-control" name="secretfile-load-passphrase"
+                            id="secretfile-load-passphrase">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary disabled" id="secretfile-load-confirmbtn"
+                        onclick="loadFile()" data-bs-dismiss="modal">Load Secretfile</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="LoadFormViewer" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Load Secretfile</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="secretfile-view-file" class="form-label">Secretfile:</label>
+                        <input class="form-control" type="file" id="secretfile-view-file" accept=".secretfile.json">
+                    </div>
+                    <div class="hidden" id="secretfile-view-passphrase-div">
+                        <label for="secretfile-view-passphrase">Decryption passphrase:</label>
+                        <input type="password" class="form-control" name="secretfile-view-passphrase"
+                            id="secretfile-view-passphrase">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="secretfile-view-confirmbtn"
+                        onclick="loadFileToViewer()" data-bs-dismiss="modal">Load Secretfile</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="SaveForm" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Save your Secretfile</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <label for="secretfile-save-filename">Filename:</label>
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" id="secretfile-save-filename"
+                                placeholder="Filename">
+                            <span class="input-group-text">.secretfile.json</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="secretfile-save-passphrase">Encryption passphrase (recommended):</label>
+                        <input type="password" class="form-control" name="secretfile-save-passphrase"
+                            id="secretfile-save-passphrase">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="saveFile()">Save Secretfile</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer class="container mt-5 text-center">
+        <p>Copyright &copy; 2023 Hexandcube
+            <br>
+            <a href="https://hexandcube.eu.org">Website</a> | <a
+                href="https://github.com/hexandcube/secretfile-editor">Source
+                code</a></p>
+    </footer>
+    <script src="app.js"></script>
+    <script src="assets/js-otp/jsOTP.min.js"></script>
+    <script src="assets/cryptojs/crypto-js.js"></script>
+    <script src="assets/qrcodejs/qrcode.js"></script>
+</body>
+
+</html>

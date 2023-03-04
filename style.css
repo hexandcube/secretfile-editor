@@ -1,0 +1,33 @@
+.hidden {
+    display: none;
+}
+
+.entry {
+    margin: 10px 0;
+}
+
+input {
+    background-color: var(--bs-secondary-bg) !important;
+}
+
+header {
+    padding: 50px 0;
+    background-color: var(--bs-info-border-subtle);
+}
+
+header h1 {
+    font-family: 'Mont';
+    font-weight: bold;
+}
+
+.copyBtn {
+    padding: 5px;
+    margin-left: 3px;
+    color: white;
+    cursor: pointer;
+    border-radius: 100%;
+}
+
+.copyBtn:hover {
+    background-color: var(--bs-info-border-subtle);
+}
