@@ -8,6 +8,9 @@
 
 input {
     background-color: var(--bs-secondary-bg) !important;
+}
+
+.entry input {
     margin-bottom: 8px !important;
     margin-top: 2px !important;
 }

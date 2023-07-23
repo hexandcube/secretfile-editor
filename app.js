@@ -70,6 +70,7 @@ function addEntry(entry, passphrase) {
             <div class ="form-group card-body">
               <label for="secretfileEditorEntry-name">Account Name <i class="fa-solid fa-circle-question help" onclick="showHelp('accountName')"></i></label>
               <input type="text" class="form-control" id="secretfileEditorEntry-accountName" placeholder="Google Account" value="${accountName}">
+              
               <label for="secretfileEditorEntry-login">Login/Email Address <i class="fa-solid fa-circle-question help" onclick="showHelp('accountLogin')"></i></label>
               <input type="text" class="form-control" id="secretfileEditorEntry-accountLogin" placeholder="example@example.com" value="${accountLogin}">
               <label for="secretfileEditorEntry-secret">Secret <i class="fa-solid fa-circle-question help" onclick="showHelp('otpSecret')"></i></label>
