@@ -31,3 +31,9 @@ header h1 {
 .copyBtn:hover {
     background-color: var(--bs-info-border-subtle);
 }
+
+.qrcode {
+    padding: 10px;
+    border-radius: 10px;
+    background-color: white;
+}
