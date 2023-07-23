@@ -68,15 +68,15 @@ function addEntry(entry, passphrase) {
         <div class="card entry">
             <h3 class="card-header">Entry ${entryCounter}</h3>
             <div class ="form-group card-body">
-              <label for="secretfileEditorEntry-name">Account Name</label>
+              <label for="secretfileEditorEntry-name">Account Name <i class="fa-solid fa-circle-question help" onclick="showHelp('accountName')"></i></label>
               <input type="text" class="form-control" id="secretfileEditorEntry-accountName" placeholder="Google Account" value="${accountName}">
-              <label for="secretfileEditorEntry-login">Login/Email Address</label>
+              <label for="secretfileEditorEntry-login">Login/Email Address <i class="fa-solid fa-circle-question help" onclick="showHelp('accountLogin')"></i></label>
               <input type="text" class="form-control" id="secretfileEditorEntry-accountLogin" placeholder="example@example.com" value="${accountLogin}">
-              <label for="secretfileEditorEntry-secret">Secret</label>
+              <label for="secretfileEditorEntry-secret">Secret <i class="fa-solid fa-circle-question help" onclick="showHelp('otpSecret')"></i></label>
               <input type="text" class="form-control" id="secretfileEditorEntry-otpSecret" placeholder="JBSWY3DPEHPK3PXP" value="${otpSecret}">
-              <label for="secretfileEditorEntry-otpDigits">Number of digits</label>
+              <label for="secretfileEditorEntry-otpDigits">Number of digits <i class="fa-solid fa-circle-question help" onclick="showHelp('otpDigits')"></i></label>
               <input type="number" class="form-control" id="secretfileEditorEntry-otpDigits" placeholder="6" value="${otpDigits}">
-              <label for="secretfileEditorEntry-otpTime">OTP expiry time (In seconds)</label>
+              <label for="secretfileEditorEntry-otpTime">OTP expiry time (In seconds) <i class="fa-solid fa-circle-question help" onclick="showHelp('otpTime')"></i></label>
               <input type="number" class="form-control" id="secretfileEditorEntry-otpTime" placeholder="30" value="${otpTime}">
               <br>
               <button class="btn btn-danger entry-delete" onclick="deleteEntry(${entryCounter})"><i class="fa-solid fa-trash-can"></i> Delete entry</button>
@@ -410,6 +410,99 @@ function copyToClip(string) {
       confirmButtonText: 'Close'
     })
   });
+}
+
+function showHelp(helpId) {
+  let defaultHelpIcon = 'info';
+  let defaultHelpConfirmText = 'Close';
+
+  switch (helpId) {
+    case 'accountName':
+      Swal.fire({
+        title: 'Account Name',
+        text: 'The name of the account. This is used to identify the account provider (e.g. Google or Facebook).',
+        icon: defaultHelpIcon,
+        confirmButtonText: defaultHelpConfirmText
+      })
+      break;
+    case 'accountLogin':
+      Swal.fire({
+        title: 'Login/Email Address',
+        text: 'The login or email address associated with the account. This is used to identify the exact account for which the OTP will be generated.',
+        icon: defaultHelpIcon,
+        confirmButtonText: defaultHelpConfirmText
+      })
+      break;
+    case 'otpSecret':
+      Swal.fire({
+        title: 'Secret',
+        text: 'The secret value used to generate the OTP. This is usually a string of random characters.',
+        icon: defaultHelpIcon,
+        confirmButtonText: defaultHelpConfirmText
+      })
+      break;
+    case 'otpDigits':
+      Swal.fire({
+        title: 'Number of digits',
+        text: 'The number of digits in the generated OTP. This is usually 6, or (in rare cases) 8. If you are unsure, leave this at the default value.',
+        icon: defaultHelpIcon,
+        confirmButtonText: defaultHelpConfirmText
+      })
+      break;
+    case 'otpTime':
+      Swal.fire({
+        title: 'OTP expiry time',
+        text: 'The time in seconds for which the OTP will be valid. This is usually 30. If you are unsure, leave this at the default value.',
+        icon: defaultHelpIcon,
+        confirmButtonText: defaultHelpConfirmText
+      })
+      break;
+    default:
+      showErrorMessage('invalidHelpId', helpId)
+      break;
+  }
+}
+
+function showErrorMessage(errorId, errorData) {
+  let defaultErrorIcon = 'error';
+  let defaultErrorCancelText = 'Close';
+  let defaultErrorConfirmText = 'Report issue';
+  let defaultBugtrackerLink = 'https://github.com/hexandcube/secretfile-editor/issues/new';
+
+  switch (errorId) {
+    case 'invalidHelpId':
+      Swal.fire({
+        title: 'Something went wrong!',
+        text: 'A help box with the specified ID could not be found. Please report this issue on GitHub.',
+        icon: defaultErrorIcon,
+        footer: `HelpId: ${errorData}`,
+        showCancelButton: true,
+        cancelButtonText: defaultErrorCancelText,
+        confirmButtonText: defaultErrorConfirmText,
+        focusCancel: true
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.open(defaultBugtrackerLink);
+        }
+      })
+      break;
+    default:
+      Swal.fire({
+        title: 'Something went wrong!',
+        text: 'An unknown error occured. Please report this issue on GitHub.',
+        icon: defaultErrorIcon,
+        footer: `ErrorId: ${errorId}, ErrorData: ${errorData}`,
+        showCancelButton: true,
+        cancelButtonText: defaultErrorCancelText,
+        confirmButtonText: defaultErrorConfirmText,
+        focusCancel: true
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.open(defaultBugtrackerLink);
+        }
+      })
+      break;
+  }
 }
 
 window.onload = function () {
