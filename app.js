@@ -1,6 +1,7 @@
-let entryCounter = 0; // Current number of entries in the editor
 const secretfileVersion = 1; // Version of the secretfile format
-const appVersion = '1.0'; // Version of the app
+const appVersion = '1.1'; // Version of the app
+
+let entryCounter = 0; 
 
 function updateEditor() {
   document.querySelectorAll('.alertEmpty').forEach(alert => {
