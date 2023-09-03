@@ -1,55 +1,51 @@
 const secretfileVersion = 1; // Version of the secretfile format
-const appVersion = '1.1'; // Version of the app
+const appVersion = "1.1"; // Version of the app
 
-let entryCounter = 0; 
+let entryCounter = 0;
 
 function updateEditor() {
-  document.querySelectorAll('.alertEmpty').forEach(alert => {
+  document.querySelectorAll(".alertEmpty").forEach((alert) => {
     if (entryCounter === 0) {
-      alert.style.display = 'block';
+      alert.style.display = "block";
     } else {
-      alert.style.display = 'none';
+      alert.style.display = "none";
     }
   });
-  const fileLoadInput = document.getElementById('secretfile-load-file');
-  fileLoadInput.value = '';
+  const fileLoadInput = document.getElementById("secretfile-load-file");
+  fileLoadInput.value = "";
 }
 
 function clearInputs() {
-  document.querySelectorAll('input').forEach(input => {
-    input.value = '';
+  document.querySelectorAll("input").forEach((input) => {
+    input.value = "";
   });
 }
 
 function clearSecretfile() {
-  swal.fire({
-    title: 'Are you sure?',
-    text: 'This will clear delete all entries from the currently open secretfile!',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonText: 'Yes, clear it!',
-    confirmButtonColor: '#d33',
-  }).then((result) => {
-    if (result.isConfirmed) {
-      document.querySelectorAll('.secretfileEditorEntry').forEach(entry => {
-        entry.remove();
-        entryCounter--;
-      });
-      document.querySelectorAll('.secretfileViewerEntry').forEach(entry => {
-        entry.remove();
-      });
-      swal.fire({
-        icon: 'success',
-        title: 'File Cleared!',
-        text: 'The currenty open file has been cleared.',
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        toast: true,
-        position: 'bottom-start',
-      })
-    }
-  })
+  swal
+    .fire({
+      title: "Are you sure?",
+      text: "This will clear delete all entries from the currently open secretfile!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, clear it!",
+      confirmButtonColor: "#d33",
+    })
+    .then((result) => {
+      if (result.isConfirmed) {
+        clearAllEntries();
+        swal.fire({
+          icon: "success",
+          title: "File Cleared!",
+          text: "The currenty open file has been cleared.",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          toast: true,
+          position: "bottom-start",
+        });
+      }
+    });
   updateEditor();
 }
 
@@ -57,9 +53,21 @@ function addEntry(entry, passphrase) {
   // This function adds a new entry to the editor. If an entry is passed, it will be used to populate the fields.
   // If a passphrase is passed, it will be used to decrypt the sensitive data of the entry.
   entryCounter++;
-  let accountName = entry ? (passphrase ? decryptString(entry.accountName, passphrase) : entry.accountName) : '';
-  let accountLogin = entry ? (passphrase ? decryptString(entry.accountLogin, passphrase) : entry.accountLogin) : '';
-  let otpSecret = entry ? (passphrase ? decryptString(entry.otpSecret, passphrase) : entry.otpSecret) : '';
+  let accountName = entry
+    ? passphrase
+      ? decryptString(entry.accountName, passphrase)
+      : entry.accountName
+    : "";
+  let accountLogin = entry
+    ? passphrase
+      ? decryptString(entry.accountLogin, passphrase)
+      : entry.accountLogin
+    : "";
+  let otpSecret = entry
+    ? passphrase
+      ? decryptString(entry.otpSecret, passphrase)
+      : entry.otpSecret
+    : "";
   let otpDigits = entry ? entry.otpDigits : 6;
   let otpTime = entry ? entry.otpTime : 30;
   let newEditorEntry = document.createElement("div");
@@ -86,14 +94,26 @@ function addEntry(entry, passphrase) {
             </div>
         </div>
         `;
-  document.getElementById('editor-entries').appendChild(newEditorEntry);
+  document.getElementById("editor-entries").appendChild(newEditorEntry);
   updateEditor();
 }
 
 function addEntryToViewer(entry, passphrase) {
-  let accountName = entry ? (passphrase ? decryptString(entry.accountName, passphrase) : entry.accountName) : '';
-  let accountLogin = entry ? (passphrase ? decryptString(entry.accountLogin, passphrase) : entry.accountLogin) : '';
-  let otpSecret = entry ? (passphrase ? decryptString(entry.otpSecret, passphrase) : entry.otpSecret) : '';
+  let accountName = entry
+    ? passphrase
+      ? decryptString(entry.accountName, passphrase)
+      : entry.accountName
+    : "";
+  let accountLogin = entry
+    ? passphrase
+      ? decryptString(entry.accountLogin, passphrase)
+      : entry.accountLogin
+    : "";
+  let otpSecret = entry
+    ? passphrase
+      ? decryptString(entry.otpSecret, passphrase)
+      : entry.otpSecret
+    : "";
   let otpDigits = entry ? entry.otpDigits : 6;
   let otpTime = entry ? entry.otpTime : 30;
   let otpAuthURI = `otpauth://totp/${accountName}:${accountLogin}?secret=${otpSecret}&digits=${otpDigits}&period=${otpTime}`;
@@ -119,15 +139,15 @@ function addEntryToViewer(entry, passphrase) {
       </div>
     </div>
   `;
-  let qrcode = new QRCode(newViewerEntry.querySelector('.qrcode'), {
+  let qrcode = new QRCode(newViewerEntry.querySelector(".qrcode"), {
     text: otpAuthURI,
     width: 256,
     height: 256,
     colorDark: "#000000",
     colorLight: "#ffffff",
-    correctLevel: QRCode.CorrectLevel.L
+    correctLevel: QRCode.CorrectLevel.L,
   });
-  document.getElementById('viewer-entries').appendChild(newViewerEntry);
+  document.getElementById("viewer-entries").appendChild(newViewerEntry);
 }
 
 function verifyEntry(entryId) {
@@ -138,178 +158,185 @@ function verifyEntry(entryId) {
   let otpTime = entry.querySelector(`#secretfileEditorEntry-otpTime`).value;
   if (!otpSecret || !otpDigits || !otpTime) {
     Swal.fire({
-      title: 'Missing settings!',
-      text: 'Make sure all required fields are filled out',
-      icon: 'error',
-      confirmButtonText: 'Close'
-    })
+      title: "Missing settings!",
+      text: "Make sure all required fields are filled out",
+      icon: "error",
+      confirmButtonText: "Close",
+    });
     return;
   }
   try {
     let totp = new jsOTP.totp(otpTime, otpDigits);
     let generatedOTP = totp.getOtp(otpSecret);
     Swal.fire({
-      title: 'Here\'s your OTP',
+      title: "Here's your OTP",
       text: `OTP: ${generatedOTP}`,
-      icon: 'success',
-      footer: 'Compare this OTP with your authenticator app. If the OTP doesn\'t match, make sure your configuration is correct and your system time is accurate.',
-      confirmButtonText: 'Close'
-    })
+      icon: "success",
+      footer:
+        "Compare this OTP with your authenticator app. If the OTP doesn't match, make sure your configuration is correct and your system time is accurate.",
+      confirmButtonText: "Close",
+    });
   } catch (e) {
     Swal.fire({
-      title: 'Something went wrong!',
+      title: "Something went wrong!",
       text: e,
-      icon: 'error',
-      confirmButtonText: 'Close'
-    })
+      icon: "error",
+      confirmButtonText: "Close",
+    });
   }
 }
 
 function deleteEntry(entryId) {
   // Deletes an entry from the editor and updates the IDs of the remaining entries
-  const entries = document.getElementById('editor-entries');
+  const entries = document.getElementById("editor-entries");
   let entry = document.getElementById(`secretfileEditorEntry-${entryId}`);
   entry.remove();
   entryCounter--;
   entries.querySelectorAll(".secretfileEditorEntry").forEach((entry, i) => {
     entry.id = `secretfileEditorEntry-${i + 1}`;
     entry.querySelector("h3").innerHTML = `Entry ${i + 1}`;
-    entry.querySelector('.entry-delete').setAttribute('onclick', `deleteEntry(${i + 1})`);
+    entry
+      .querySelector(".entry-delete")
+      .setAttribute("onclick", `deleteEntry(${i + 1})`);
   });
   updateEditor();
 }
 
 function loadFile() {
   // Clear viewer and editor entries
-  document.querySelectorAll('.secretfileEditorEntry').forEach(entry => {
+  document.querySelectorAll(".secretfileEditorEntry").forEach((entry) => {
     entry.remove();
     entryCounter--;
   });
-  document.querySelectorAll('.secretfileViewerEntry').forEach(entry => {
+  document.querySelectorAll(".secretfileViewerEntry").forEach((entry) => {
     entry.remove();
   });
   // Load a secretfile from a file input and check file format
-  let file = document.getElementById('secretfile-load-file').files[0];
-  if (file.name.split('.').pop() != 'json' && file.name.split('.').pop() != 'secretfile') {
+  let file = document.getElementById("secretfile-load-file").files[0];
+  if (
+    file.name.split(".").pop() != "json" &&
+    file.name.split(".").pop() != "secretfile"
+  ) {
     swal.fire({
-      icon: 'error',
-      title: 'Invalid Secretfile',
-      text: 'Please select a valid .secretfile.json file',
-    })
+      icon: "error",
+      title: "Invalid Secretfile",
+      text: "Please select a valid .secretfile.json file",
+    });
     return;
   }
 
   let reader = new FileReader();
   reader.readAsText(file, "UTF-8");
-  reader.onload = readerEvent => {
+  reader.onload = (readerEvent) => {
     // Parse the file, and check if it's data is encrypted
     let fileContent = JSON.parse(readerEvent.target.result);
     let isEncrypted = fileContent.encrypted;
     let passphrase;
     if (isEncrypted) {
-      passphrase = document.getElementById('secretfile-load-passphrase').value;
+      passphrase = document.getElementById("secretfile-load-passphrase").value;
     }
     let entries = fileContent.entries;
     // Enumerate through the entries and add them to the editor using addEntry()
     // If the file is not encrypted, passphrase is undefined and ignored by addEntry()
     try {
-      entries.forEach(entry => {
+      entries.forEach((entry) => {
         addEntry(entry, passphrase);
       });
       swal.fire({
-        icon: 'success',
-        title: 'Success!',
-        text: 'Secretfile loaded successfully!',
+        icon: "success",
+        title: "Success!",
+        text: "Secretfile loaded successfully!",
         showConfirmButton: false,
         timer: 3000,
         timerProgressBar: true,
         toast: true,
-        position: 'bottom-start',
-      })
+        position: "bottom-start",
+      });
     } catch (e) {
       swal.fire({
-        icon: 'error',
-        title: 'Failed to load secretfile',
-        text: 'The passphrase you entered is incorrect, or the secretfile is corrupted. Please make sure you entered the correct passphrase and try again.',
-      })
+        icon: "error",
+        title: "Failed to load secretfile",
+        text: "The passphrase you entered is incorrect, or the secretfile is corrupted. Please make sure you entered the correct passphrase and try again.",
+      });
     }
-  }
+  };
   updateEditor();
 }
 
 function loadFileToViewer() {
-  // Clear viewer and editor entries
-  document.querySelectorAll('.secretfileEditorEntry').forEach(entry => {
-    entry.remove();
-    entryCounter--;
-  });
 
+  clearAllEntries();
 
-  let file = document.getElementById('secretfile-view-file').files[0];
-  if (file.name.split('.').pop() != 'json' && file.name.split('.').pop() != 'secretfile') {
+  let file = document.getElementById("secretfile-view-file").files[0];
+  if (
+    file.name.split(".").pop() != "json" &&
+    file.name.split(".").pop() != "secretfile"
+  ) {
     swal.fire({
-      icon: 'error',
-      title: 'Invalid Secretfile',
-      text: 'Please select a valid .secretfile.json file',
-    })
+      icon: "error",
+      title: "Invalid Secretfile",
+      text: "Please select a valid .secretfile.json file",
+    });
     return;
   }
 
   let reader = new FileReader();
   reader.readAsText(file, "UTF-8");
-  reader.onload = readerEvent => {
+  reader.onload = (readerEvent) => {
     // Parse the file, and check if it's data is encrypted
     let fileContent = JSON.parse(readerEvent.target.result);
     let isEncrypted = fileContent.encrypted;
     let passphrase;
     if (isEncrypted) {
-      passphrase = document.getElementById('secretfile-view-passphrase').value;
+      passphrase = document.getElementById("secretfile-view-passphrase").value;
     }
     let entries = fileContent.entries;
     // Enumerate through the entries and add them to the editor using addEntry()
     // If the file is not encrypted, passphrase is undefined and ignored by addEntry()
     try {
-      entries.forEach(entry => {
+      entries.forEach((entry) => {
         addEntry(entry, passphrase);
         addEntryToViewer(entry, passphrase);
       });
       swal.fire({
-        icon: 'success',
-        title: 'Success!',
-        text: 'Secretfile loaded successfully!',
+        icon: "success",
+        title: "Success!",
+        text: "Secretfile loaded successfully!",
         showConfirmButton: false,
         timer: 3000,
         timerProgressBar: true,
         toast: true,
-        position: 'bottom-start',
-      })
+        position: "bottom-start",
+      });
     } catch (e) {
       swal.fire({
-        icon: 'error',
-        title: 'Failed to load secretfile',
-        text: 'The passphrase you entered is incorrect, or the secretfile is corrupted. Please make sure you entered the correct passphrase and try again.',
-      })
+        icon: "error",
+        title: "Failed to load secretfile",
+        text: "The passphrase you entered is incorrect, or the secretfile is corrupted. Please make sure you entered the correct passphrase and try again.",
+      });
     }
-  }
+  };
   updateEditor();
 }
 
 function saveFile() {
-  let passphrase = document.getElementById('secretfile-save-passphrase').value;
-  let entries = document.getElementById('editor-entries');
+  let passphrase = document.getElementById("secretfile-save-passphrase").value;
+  let entries = document.getElementById("editor-entries");
   if (!passphrase) {
-    swal.fire({
-      icon: 'warning',
-      title: 'Are you sure?',
-      text: 'You haven\'t entered an encryption passphrase. This means your secretfile will be saved in plain text! Are you sure you want to continue?',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, save in plain text',
-      cancelButtonText: 'No, cancel'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        generateFileContent(entries);
-      }
-    })
+    swal
+      .fire({
+        icon: "warning",
+        title: "Are you sure?",
+        text: "You haven't entered an encryption passphrase. This means your secretfile will be saved in plain text! Are you sure you want to continue?",
+        showCancelButton: true,
+        confirmButtonText: "Yes, save in plain text",
+        cancelButtonText: "No, cancel",
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+          generateFileContent(entries);
+        }
+      });
   } else {
     generateFileContent(entries, passphrase);
   }
@@ -325,10 +352,33 @@ function generateFileContent(entries, passphrase) {
       secretFileContent += `
     {
       "entryId": ${i + 1},
-      "accountName": "${passphrase ? encryptString(entry.querySelector(`#secretfileEditorEntry-accountName`).value, passphrase) : entry.querySelector(`#secretfileEditorEntry-accountName`).value}",
-      "accountLogin": "${passphrase ? encryptString(entry.querySelector(`#secretfileEditorEntry-accountLogin`).value, passphrase) : entry.querySelector(`#secretfileEditorEntry-accountLogin`).value}",
-      "otpSecret": "${passphrase ? encryptString(entry.querySelector(`#secretfileEditorEntry-otpSecret`).value, passphrase) : entry.querySelector(`#secretfileEditorEntry-otpSecret`).value}",
-      "otpDigits": ${entry.querySelector(`#secretfileEditorEntry-otpDigits`).value},
+      "accountName": "${
+        passphrase
+          ? encryptString(
+              entry.querySelector(`#secretfileEditorEntry-accountName`).value,
+              passphrase
+            )
+          : entry.querySelector(`#secretfileEditorEntry-accountName`).value
+      }",
+      "accountLogin": "${
+        passphrase
+          ? encryptString(
+              entry.querySelector(`#secretfileEditorEntry-accountLogin`).value,
+              passphrase
+            )
+          : entry.querySelector(`#secretfileEditorEntry-accountLogin`).value
+      }",
+      "otpSecret": "${
+        passphrase
+          ? encryptString(
+              entry.querySelector(`#secretfileEditorEntry-otpSecret`).value,
+              passphrase
+            )
+          : entry.querySelector(`#secretfileEditorEntry-otpSecret`).value
+      }",
+      "otpDigits": ${
+        entry.querySelector(`#secretfileEditorEntry-otpDigits`).value
+      },
       "otpTime": ${entry.querySelector(`#secretfileEditorEntry-otpTime`).value}
     }`;
       if (i !== entries.querySelectorAll(".secretfileEditorEntry").length - 1) {
@@ -339,26 +389,30 @@ function generateFileContent(entries, passphrase) {
     secretFileContent += `
   ]
 }`;
-    let filename = document.getElementById('secretfile-save-filename').value;
-    downloadFile(secretFileContent, `${filename}.secretfile.json`, 'application/json');
+    let filename = document.getElementById("secretfile-save-filename").value;
+    downloadFile(
+      secretFileContent,
+      `${filename}.secretfile.json`,
+      "application/json"
+    );
     swal.fire({
-      icon: 'success',
-      title: 'Success!',
-      text: 'Secretfile saved successfully!',
+      icon: "success",
+      title: "Success!",
+      text: "Secretfile saved successfully!",
       showConfirmButton: false,
       timer: 3000,
       timerProgressBar: true,
       toast: true,
-      position: 'bottom-start',
-    })
+      position: "bottom-start",
+    });
   } catch (e) {
     Swal.fire({
-      title: 'Something went wrong!',
+      title: "Something went wrong!",
       text: e,
-      icon: 'error',
-      confirmButtonText: 'Close'
-    })
-    console.error('An error occured: ' + e);
+      icon: "error",
+      confirmButtonText: "Close",
+    });
+    console.error("An error occured: " + e);
   }
 }
 
@@ -374,12 +428,12 @@ function decryptString(string, passphrase) {
 
 function downloadFile(data, filename, type) {
   let file = new Blob([data], {
-    type: type
+    type: type,
   });
   if (window.navigator.msSaveOrOpenBlob)
     window.navigator.msSaveOrOpenBlob(file, filename);
   else {
-    let a = document.createElement("a")
+    let a = document.createElement("a");
     let url = URL.createObjectURL(file);
     a.href = url;
     a.download = filename;
@@ -393,157 +447,184 @@ function downloadFile(data, filename, type) {
 }
 
 function copyToClip(string) {
-  navigator.clipboard.writeText(string).then(function () {
-    swal.fire({
-      icon: 'success',
-      title: 'Copied!',
-      text: 'Data copied to clipboard!',
-      showConfirmButton: false,
-      timer: 3000,
-      timerProgressBar: true,
-      toast: true,
-      position: 'bottom-start',
-    })
-  }, function (err) {
-    console.error('Async: Could not copy text: ', err);
-    Swal.fire({
-      title: 'Something went wrong!',
-      text: e,
-      icon: 'error',
-      confirmButtonText: 'Close'
-    })
-  });
+  navigator.clipboard.writeText(string).then(
+    function () {
+      swal.fire({
+        icon: "success",
+        title: "Copied!",
+        text: "Data copied to clipboard!",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        toast: true,
+        position: "bottom-start",
+      });
+    },
+    function (err) {
+      console.error("Error: Could not copy text: ", err);
+      Swal.fire({
+        title: "Something went wrong!",
+        text: err,
+        icon: "error",
+        confirmButtonText: "Close",
+      });
+    }
+  );
+}
+    
+function clearAllEntries() {
+    document.querySelectorAll(".secretfileEditorEntry").forEach((entry) => {
+      entry.remove();
+      entryCounter--;
+    });
+    document.querySelectorAll(".secretfileViewerEntry").forEach((entry) => {
+      entry.remove();
+    });
+    updateEditor();
 }
 
 function showHelp(helpId) {
-  let defaultHelpIcon = 'info';
-  let defaultHelpConfirmText = 'Close';
+  let defaultHelpIcon = "info";
+  let defaultHelpConfirmText = "Close";
 
   switch (helpId) {
-    case 'accountName':
+    case "accountName":
       Swal.fire({
-        title: 'Account Name',
-        text: 'The name of the account. This is used to identify the account provider (e.g. Google or Facebook).',
+        title: "Account Name",
+        text: "The name of the account. This is used to identify the account provider (e.g. Google or Facebook).",
         icon: defaultHelpIcon,
-        confirmButtonText: defaultHelpConfirmText
-      })
+        confirmButtonText: defaultHelpConfirmText,
+      });
       break;
-    case 'accountLogin':
+    case "accountLogin":
       Swal.fire({
-        title: 'Login/Email Address',
-        text: 'The login or email address associated with the account. This is used to identify the exact account for which the OTP will be generated.',
+        title: "Login/Email Address",
+        text: "The login or email address associated with the account. This is used to identify the exact account for which the OTP will be generated.",
         icon: defaultHelpIcon,
-        confirmButtonText: defaultHelpConfirmText
-      })
+        confirmButtonText: defaultHelpConfirmText,
+      });
       break;
-    case 'otpSecret':
+    case "otpSecret":
       Swal.fire({
-        title: 'Secret',
-        text: 'The secret value used to generate the OTP. This is usually a string of random characters.',
+        title: "Secret",
+        text: "The secret value used to generate the OTP. This is usually a string of random characters.",
         icon: defaultHelpIcon,
-        confirmButtonText: defaultHelpConfirmText
-      })
+        confirmButtonText: defaultHelpConfirmText,
+      });
       break;
-    case 'otpDigits':
+    case "otpDigits":
       Swal.fire({
-        title: 'Number of digits',
-        text: 'The number of digits in the generated OTP. This is usually 6, or (in rare cases) 8. If you are unsure, leave this at the default value.',
+        title: "Number of digits",
+        text: "The number of digits in the generated OTP. This is usually 6, or (in rare cases) 8. If you are unsure, leave this at the default value.",
         icon: defaultHelpIcon,
-        confirmButtonText: defaultHelpConfirmText
-      })
+        confirmButtonText: defaultHelpConfirmText,
+      });
       break;
-    case 'otpTime':
+    case "otpTime":
       Swal.fire({
-        title: 'OTP expiry time',
-        text: 'The time in seconds for which the OTP will be valid. This is usually 30. If you are unsure, leave this at the default value.',
+        title: "OTP expiry time",
+        text: "The time in seconds for which the OTP will be valid. This is usually 30. If you are unsure, leave this at the default value.",
         icon: defaultHelpIcon,
-        confirmButtonText: defaultHelpConfirmText
-      })
+        confirmButtonText: defaultHelpConfirmText,
+      });
       break;
     default:
-      showErrorMessage('invalidHelpId', helpId)
+      showErrorMessage("invalidHelpId", helpId);
       break;
   }
 }
 
 function showErrorMessage(errorId, errorData) {
-  let defaultErrorIcon = 'error';
-  let defaultErrorCancelText = 'Close';
-  let defaultErrorConfirmText = 'Report issue';
-  let defaultBugtrackerLink = 'https://github.com/hexandcube/secretfile-editor/issues/new';
+  let defaultErrorIcon = "error";
+  let defaultErrorCancelText = "Close";
+  let defaultErrorConfirmText = "Report issue";
+  let defaultBugtrackerLink =
+    "https://github.com/hexandcube/secretfile-editor/issues/new";
 
   switch (errorId) {
-    case 'invalidHelpId':
+    case "invalidHelpId":
       Swal.fire({
-        title: 'Something went wrong!',
-        text: 'A help box with the specified ID could not be found. Please report this issue on GitHub.',
+        title: "Something went wrong!",
+        text: "A help box with the specified ID could not be found. Please report this issue on GitHub.",
         icon: defaultErrorIcon,
         footer: `HelpId: ${errorData}`,
         showCancelButton: true,
         cancelButtonText: defaultErrorCancelText,
         confirmButtonText: defaultErrorConfirmText,
-        focusCancel: true
+        focusCancel: true,
       }).then((result) => {
         if (result.isConfirmed) {
           window.open(defaultBugtrackerLink);
         }
-      })
+      });
       break;
     default:
       Swal.fire({
-        title: 'Something went wrong!',
-        text: 'An unknown error occured. Please report this issue on GitHub.',
+        title: "Something went wrong!",
+        text: "An unknown error occured. Please report this issue on GitHub.",
         icon: defaultErrorIcon,
         footer: `ErrorId: ${errorId}, ErrorData: ${errorData}`,
         showCancelButton: true,
         cancelButtonText: defaultErrorCancelText,
         confirmButtonText: defaultErrorConfirmText,
-        focusCancel: true
+        focusCancel: true,
       }).then((result) => {
         if (result.isConfirmed) {
           window.open(defaultBugtrackerLink);
         }
-      })
+      });
       break;
   }
 }
 
 window.onload = function () {
-  document.getElementById('secretfile-load-file').onchange = function (e) {
+  document.getElementById("secretfile-load-file").onchange = function (e) {
     // Check if the file selected by the user is encrypted, and if so, show the passphrase input
     let file = e.target.files[0];
     let reader = new FileReader();
     reader.readAsText(file, "UTF-8");
 
-    reader.onload = readerEvent => {
+    reader.onload = (readerEvent) => {
       let fileContent = readerEvent.target.result;
       if (JSON.parse(fileContent).encrypted) {
-        document.getElementById('secretfile-load-passphrase-div').classList.remove('hidden');
+        document
+          .getElementById("secretfile-load-passphrase-div")
+          .classList.remove("hidden");
       } else {
-        document.getElementById('secretfile-load-passphrase-div').classList.add('hidden');
+        document
+          .getElementById("secretfile-load-passphrase-div")
+          .classList.add("hidden");
       }
       // Enable the load button once the user has selected a file
-      document.getElementById('secretfile-load-confirmbtn').classList.remove('disabled');
-    }
+      document
+        .getElementById("secretfile-load-confirmbtn")
+        .classList.remove("disabled");
+    };
   };
-  document.getElementById('secretfile-view-file').onchange = function (e) {
+  document.getElementById("secretfile-view-file").onchange = function (e) {
     // Check if the file selected by the user is encrypted, and if so, show the passphrase input
     let file = e.target.files[0];
     let reader = new FileReader();
     reader.readAsText(file, "UTF-8");
 
-    reader.onload = readerEvent => {
+    reader.onload = (readerEvent) => {
       let fileContent = readerEvent.target.result;
       if (JSON.parse(fileContent).encrypted) {
-        document.getElementById('secretfile-view-passphrase-div').classList.remove('hidden');
+        document
+          .getElementById("secretfile-view-passphrase-div")
+          .classList.remove("hidden");
       } else {
-        document.getElementById('secretfile-view-passphrase-div').classList.add('hidden');
+        document
+          .getElementById("secretfile-view-passphrase-div")
+          .classList.add("hidden");
       }
       // Enable the load button once the user has selected a file
-      document.getElementById('secretfile-view-confirmbtn').classList.remove('disabled');
-    }
+      document
+        .getElementById("secretfile-view-confirmbtn")
+        .classList.remove("disabled");
+    };
   };
-  document.getElementById('version').innerHTML = `v${appVersion}`;
+  document.getElementById("version").innerHTML = `v${appVersion}`;
   clearInputs();
   updateEditor();
-}
+};

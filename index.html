@@ -68,12 +68,23 @@
                 <div class="card-body" id="pane">
                     <div id="viewer-entries">
                         <div class="alert alert-info alertEmpty" role="alert">
-                            The viewer is empty! Click the button below to open an existing Secretfile.
+                            <div class="print-hide">
+                                The viewer is empty! Click the open button below to load an existing Secretfile.
+                            </div>
+                            <div class="print-show">
+                                No entries loaded in the viewer. Open a Secretfile in the viewer to print it.
+                            </div>
                         </div>
                     </div>
                     <div class="print-hide">
-                        <a class="btn btn-success d-grid" data-bs-toggle="modal" data-bs-target="#LoadFormViewer"><i
-                                class="fa-solid fa-folder-open"></i> Open Secretfile</a>
+                        <div class="btn-group d-flex">
+                            <a class="btn btn-success" data-bs-toggle="modal" data-bs-target="#LoadFormViewer"><i
+                                    class="fa-solid fa-folder-open"></i> Open Secretfile</a>
+                            <a class="btn btn-primary" onclick="window.print()"><i
+                                    class="fa-solid fa-print"></i> Print viewer</a>
+                            <a class="btn btn-danger" onclick="clearSecretfile()"><i
+                                    class="fa-solid fa-circle-xmark"></i> Clear viewer</a>
+                        </div>
                         <div class="muted text-center mt-2">If you want to edit this secret file, switch to the Editor tab.
                         </div>
                     </div>
