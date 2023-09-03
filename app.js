@@ -105,6 +105,7 @@ function addEntryToViewer(entry, passphrase) {
       <h3 class="card-header">Entry ${entryCounter}</h3>
       <div class="card-body row align-items-start">
         <div class="col">
+        <div class="print-show" style="margin-top:20px;"></div>
           <p><b>Account Name:</b> ${accountName} <a class="copyBtn" onclick="copyToClip('${accountName}')"><i class="fa-solid fa-copy fa-fw"></i></a></p>
           <p><b>Login/Email Address:</b> ${accountLogin} <a class="copyBtn" onclick="copyToClip('${accountLogin}')"><i class="fa-solid fa-copy fa-fw"></i></a></p>
           <p><b>Secret:</b> ${otpSecret} <a class="copyBtn" onclick="copyToClip('${otpSecret}')"><i class="fa-solid fa-copy fa-fw"></i></a></p>
