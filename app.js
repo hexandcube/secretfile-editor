@@ -241,61 +241,6 @@ function loadFile() {
     try {
       entries.forEach((entry) => {
         addEntry(entry, passphrase);
-      });
-      swal.fire({
-        icon: "success",
-        title: "Success!",
-        text: "Secretfile loaded successfully!",
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        toast: true,
-        position: "bottom-start",
-      });
-    } catch (e) {
-      swal.fire({
-        icon: "error",
-        title: "Failed to load secretfile",
-        text: "The passphrase you entered is incorrect, or the secretfile is corrupted. Please make sure you entered the correct passphrase and try again.",
-      });
-    }
-  };
-  updateEditor();
-}
-
-function loadFileToViewer() {
-
-  clearAllEntries();
-
-  let file = document.getElementById("secretfile-view-file").files[0];
-  if (
-    file.name.split(".").pop() != "json" &&
-    file.name.split(".").pop() != "secretfile"
-  ) {
-    swal.fire({
-      icon: "error",
-      title: "Invalid Secretfile",
-      text: "Please select a valid .secretfile.json file",
-    });
-    return;
-  }
-
-  let reader = new FileReader();
-  reader.readAsText(file, "UTF-8");
-  reader.onload = (readerEvent) => {
-    // Parse the file, and check if it's data is encrypted
-    let fileContent = JSON.parse(readerEvent.target.result);
-    let isEncrypted = fileContent.encrypted;
-    let passphrase;
-    if (isEncrypted) {
-      passphrase = document.getElementById("secretfile-view-passphrase").value;
-    }
-    let entries = fileContent.entries;
-    // Enumerate through the entries and add them to the editor using addEntry()
-    // If the file is not encrypted, passphrase is undefined and ignored by addEntry()
-    try {
-      entries.forEach((entry) => {
-        addEntry(entry, passphrase);
         addEntryToViewer(entry, passphrase);
       });
       swal.fire({
@@ -598,29 +543,6 @@ window.onload = function () {
       // Enable the load button once the user has selected a file
       document
         .getElementById("secretfile-load-confirmbtn")
-        .classList.remove("disabled");
-    };
-  };
-  document.getElementById("secretfile-view-file").onchange = function (e) {
-    // Check if the file selected by the user is encrypted, and if so, show the passphrase input
-    let file = e.target.files[0];
-    let reader = new FileReader();
-    reader.readAsText(file, "UTF-8");
-
-    reader.onload = (readerEvent) => {
-      let fileContent = readerEvent.target.result;
-      if (JSON.parse(fileContent).encrypted) {
-        document
-          .getElementById("secretfile-view-passphrase-div")
-          .classList.remove("hidden");
-      } else {
-        document
-          .getElementById("secretfile-view-passphrase-div")
-          .classList.add("hidden");
-      }
-      // Enable the load button once the user has selected a file
-      document
-        .getElementById("secretfile-view-confirmbtn")
         .classList.remove("disabled");
     };
   };

@@ -78,7 +78,7 @@
                     </div>
                     <div class="print-hide">
                         <div class="btn-group d-flex">
-                            <a class="btn btn-success" data-bs-toggle="modal" data-bs-target="#LoadFormViewer"><i
+                            <a class="btn btn-success" data-bs-toggle="modal" data-bs-target="#LoadForm"><i
                                     class="fa-solid fa-folder-open"></i> Open Secretfile</a>
                             <a class="btn btn-primary" onclick="window.print()"><i
                                     class="fa-solid fa-print"></i> Print viewer</a>
@@ -132,32 +132,6 @@
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary disabled" id="secretfile-load-confirmbtn"
                         onclick="loadFile()" data-bs-dismiss="modal">Load Secretfile</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="modal" id="LoadFormViewer" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Load Secretfile</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="secretfile-view-file" class="form-label">Secretfile:</label>
-                        <input class="form-control" type="file" id="secretfile-view-file" accept=".secretfile.json">
-                    </div>
-                    <div class="hidden" id="secretfile-view-passphrase-div">
-                        <label for="secretfile-view-passphrase">Decryption passphrase:</label>
-                        <input type="password" class="form-control" name="secretfile-view-passphrase"
-                            id="secretfile-view-passphrase">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="secretfile-view-confirmbtn"
-                        onclick="loadFileToViewer()" data-bs-dismiss="modal">Load Secretfile</button>
                 </div>
             </div>
         </div>
