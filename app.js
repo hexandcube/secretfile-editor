@@ -125,7 +125,7 @@ function addEntryToViewer(entry, passphrase, entryId) {
       <h3 class="card-header">Entry ${entryId ? entryId:entryCounter}</h3>
       <div class="card-body row align-items-start">
         <div class="col">
-        <div class="print-show" style="margin-top:20px;"></div>
+        <div class="print-show" style="margin-top:10px;"></div>
           <p><b>Account Name:</b> ${accountName} <a class="copyBtn" onclick="copyToClip('${accountName}')"><i class="fa-solid fa-copy fa-fw"></i></a></p>
           <p><b>Login/Email Address:</b> ${accountLogin} <a class="copyBtn" onclick="copyToClip('${accountLogin}')"><i class="fa-solid fa-copy fa-fw"></i></a></p>
           <p><b>Secret:</b> ${otpSecret} <a class="copyBtn" onclick="copyToClip('${otpSecret}')"><i class="fa-solid fa-copy fa-fw"></i></a></p>
@@ -141,8 +141,8 @@ function addEntryToViewer(entry, passphrase, entryId) {
   `;
   let qrcode = new QRCode(newViewerEntry.querySelector(".qrcode"), {
     text: otpAuthURI,
-    width: 256,
-    height: 256,
+    width: 220,
+    height: 220,
     colorDark: "#000000",
     colorLight: "#ffffff",
     correctLevel: QRCode.CorrectLevel.L,
