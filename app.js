@@ -122,7 +122,7 @@ function addEntryToViewer(entry, passphrase, entryId) {
   newViewerEntry.id = `secretfileViewerEntry-${entryCounter}`;
   newViewerEntry.innerHTML = `
     <div class="card entry">
-      <h3 class="card-header">Entry ${entryId ? entryId:entryCounter}</h3>
+      <h3 class="card-header">Entry ${entryId ? entryId : entryCounter}</h3>
       <div class="card-body row align-items-start">
         <div class="col">
         <div class="print-show" style="margin-top:10px;"></div>
@@ -202,17 +202,14 @@ function deleteEntry(entryId) {
   updateEditor();
 }
 
-function loadFile() {
-  // Clear viewer and editor entries
-  document.querySelectorAll(".secretfileEditorEntry").forEach((entry) => {
-    entry.remove();
-    entryCounter--;
-  });
-  document.querySelectorAll(".secretfileViewerEntry").forEach((entry) => {
-    entry.remove();
-  });
-  // Load a secretfile from a file input and check file format
+function loadFile(droppedFile) {
   let file = document.getElementById("secretfile-load-file").files[0];
+
+  // if a drag and dropped file is passed, use that instead of the file input
+  if (droppedFile) {
+    file = droppedFile;
+  }
+
   if (
     file.name.split(".").pop() != "json" &&
     file.name.split(".").pop() != "secretfile"
@@ -232,35 +229,67 @@ function loadFile() {
     let fileContent = JSON.parse(readerEvent.target.result);
     let isEncrypted = fileContent.encrypted;
     let passphrase;
-    if (isEncrypted) {
+    if (isEncrypted && !droppedFile) {
       passphrase = document.getElementById("secretfile-load-passphrase").value;
-    }
-    let entries = fileContent.entries;
-    // Enumerate through the entries and add them to the editor using addEntry()
-    // If the file is not encrypted, passphrase is undefined and ignored by addEntry()
-    try {
-      entries.forEach((entry) => {
-        addEntry(entry, passphrase);
-        addEntryToViewer(entry, passphrase);
-      });
-      swal.fire({
-        icon: "success",
-        title: "Success!",
-        text: "Secretfile loaded successfully!",
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        toast: true,
-        position: "bottom-start",
-      });
-    } catch (e) {
-      swal.fire({
-        icon: "error",
-        title: "Failed to load secretfile",
-        text: "The passphrase you entered is incorrect, or the secretfile is corrupted. Please make sure you entered the correct passphrase and try again.",
-      });
+      loadEntriesFromFile(fileContent, passphrase);
+    } else if (isEncrypted && droppedFile) {
+      swal
+        .fire({
+          title: "Passphrase required",
+          text: "This file is encryped, please enter the passphrase to decrypt it.",
+          input: "password",
+          showCancelButton: true,
+          confirmButtonText: "Decrypt",
+          cancelButtonText: "Cancel",
+        })
+        .then((result) => {
+          if (result.isConfirmed) {
+            passphrase = result.value;
+            loadEntriesFromFile(fileContent, passphrase);
+          } else {
+            return;
+          }
+        });
+    } else {
+      loadEntriesFromFile(fileContent, null);
     }
   };
+}
+
+function loadEntriesFromFile(fileContent, passphrase) {
+  // Clear viewer and editor entries
+  document.querySelectorAll(".secretfileEditorEntry").forEach((entry) => {
+    entry.remove();
+    entryCounter--;
+  });
+  document.querySelectorAll(".secretfileViewerEntry").forEach((entry) => {
+    entry.remove();
+  });
+
+  let entries = fileContent.entries;
+
+  try {
+    entries.forEach((entry) => {
+      addEntry(entry, passphrase);
+      addEntryToViewer(entry, passphrase);
+    });
+    swal.fire({
+      icon: "success",
+      title: "Success!",
+      text: "Secretfile loaded successfully!",
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      toast: true,
+      position: "bottom-start",
+    });
+  } catch (e) {
+    swal.fire({
+      icon: "error",
+      title: "Failed to load secretfile",
+      text: "The passphrase you entered is incorrect, or the secretfile is corrupted. Please make sure you entered the correct passphrase and try again.",
+    });
+  }
   updateEditor();
 }
 
@@ -289,27 +318,33 @@ function saveFile() {
 
 function updateViewerFromEditor() {
   let entries = document.getElementById("editor-entries");
-  
-    document.querySelectorAll(".secretfileViewerEntry").forEach((entry) => {
-      entry.remove();
-    });
 
-  let updateEntryCounter = 1;  
-  
+  document.querySelectorAll(".secretfileViewerEntry").forEach((entry) => {
+    entry.remove();
+  });
+
+  let updateEntryCounter = 1;
+
   entries.querySelectorAll(".secretfileEditorEntry").forEach((entry) => {
     let accountName = entry.querySelector(`#secretfileEditorEntry-accountName`);
-    let accountLogin = entry.querySelector(`#secretfileEditorEntry-accountLogin`);
+    let accountLogin = entry.querySelector(
+      `#secretfileEditorEntry-accountLogin`
+    );
     let otpSecret = entry.querySelector(`#secretfileEditorEntry-otpSecret`);
     let otpDigits = entry.querySelector(`#secretfileEditorEntry-otpDigits`);
     let otpTime = entry.querySelector(`#secretfileEditorEntry-otpTime`);
 
-    addEntryToViewer({
-      accountName: accountName.value,
-      accountLogin: accountLogin.value,
-      otpSecret: otpSecret.value,
-      otpDigits: otpDigits.value,
-      otpTime: otpTime.value,
-    }, null, updateEntryCounter);
+    addEntryToViewer(
+      {
+        accountName: accountName.value,
+        accountLogin: accountLogin.value,
+        otpSecret: otpSecret.value,
+        otpDigits: otpDigits.value,
+        otpTime: otpTime.value,
+      },
+      null,
+      updateEntryCounter
+    );
 
     updateEntryCounter++;
   });
@@ -444,16 +479,16 @@ function copyToClip(string) {
     }
   );
 }
-    
+
 function clearAllEntries() {
-    document.querySelectorAll(".secretfileEditorEntry").forEach((entry) => {
-      entry.remove();
-      entryCounter--;
-    });
-    document.querySelectorAll(".secretfileViewerEntry").forEach((entry) => {
-      entry.remove();
-    });
-    updateEditor();
+  document.querySelectorAll(".secretfileEditorEntry").forEach((entry) => {
+    entry.remove();
+    entryCounter--;
+  });
+  document.querySelectorAll(".secretfileViewerEntry").forEach((entry) => {
+    entry.remove();
+  });
+  updateEditor();
 }
 
 function showHelp(helpId) {
@@ -550,6 +585,33 @@ function showErrorMessage(errorId, errorData) {
   }
 }
 
+let dropArea = document.getElementById("drop-area");
+let dropAreaOverlay = document.getElementById("drop-area-overlay");
+
+function showDropArea(e) {
+  dropAreaOverlay.classList.remove("invisible");
+}
+
+function hideDropArea(e) {
+  dropAreaOverlay.classList.add("invisible");
+}
+
+function handleDrop(e) {
+  let dt = e.dataTransfer;
+  let files = dt.files;
+
+  handleDroppedFiles(files);
+}
+
+function handleDroppedFiles(files) {
+  [...files].forEach(loadFile);
+}
+
+function preventDefaults(e) {
+  e.preventDefault();
+  e.stopPropagation();
+}
+
 window.onload = function () {
   document.getElementById("secretfile-load-file").onchange = function (e) {
     // Check if the file selected by the user is encrypted, and if so, show the passphrase input
@@ -574,7 +636,23 @@ window.onload = function () {
         .classList.remove("disabled");
     };
   };
-  document.getElementById("version").innerHTML = `v${appVersion}`;
+
+  dropArea.addEventListener("drop", handleDrop, false);
+
+  ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+    dropArea.addEventListener(eventName, preventDefaults, false);
+  });
+
+  ["dragenter", "dragover"].forEach((eventName) => {
+    dropArea.addEventListener(eventName, showDropArea, false);
+  });
+
+  ["dragleave", "drop"].forEach((eventName) => {
+    dropArea.addEventListener(eventName, hideDropArea, false);
+  });
+
   clearInputs();
   updateEditor();
+
+  document.getElementById("version").innerHTML = `v${appVersion}`;
 };
