@@ -25,7 +25,7 @@ function clearSecretfile() {
   swal
     .fire({
       title: "Are you sure?",
-      text: "This will clear delete all entries from the currently open secretfile!",
+      text: "This will clear all entries from the currently open secretfile!",
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Yes, clear it!",
@@ -98,7 +98,7 @@ function addEntry(entry, passphrase) {
   updateEditor();
 }
 
-function addEntryToViewer(entry, passphrase) {
+function addEntryToViewer(entry, passphrase, entryId) {
   let accountName = entry
     ? passphrase
       ? decryptString(entry.accountName, passphrase)
@@ -122,7 +122,7 @@ function addEntryToViewer(entry, passphrase) {
   newViewerEntry.id = `secretfileViewerEntry-${entryCounter}`;
   newViewerEntry.innerHTML = `
     <div class="card entry">
-      <h3 class="card-header">Entry ${entryCounter}</h3>
+      <h3 class="card-header">Entry ${entryId ? entryId:entryCounter}</h3>
       <div class="card-body row align-items-start">
         <div class="col">
         <div class="print-show" style="margin-top:20px;"></div>
@@ -285,6 +285,34 @@ function saveFile() {
   } else {
     generateFileContent(entries, passphrase);
   }
+}
+
+function updateViewerFromEditor() {
+  let entries = document.getElementById("editor-entries");
+  
+    document.querySelectorAll(".secretfileViewerEntry").forEach((entry) => {
+      entry.remove();
+    });
+
+  let updateEntryCounter = 1;  
+  
+  entries.querySelectorAll(".secretfileEditorEntry").forEach((entry) => {
+    let accountName = entry.querySelector(`#secretfileEditorEntry-accountName`);
+    let accountLogin = entry.querySelector(`#secretfileEditorEntry-accountLogin`);
+    let otpSecret = entry.querySelector(`#secretfileEditorEntry-otpSecret`);
+    let otpDigits = entry.querySelector(`#secretfileEditorEntry-otpDigits`);
+    let otpTime = entry.querySelector(`#secretfileEditorEntry-otpTime`);
+
+    addEntryToViewer({
+      accountName: accountName.value,
+      accountLogin: accountLogin.value,
+      otpSecret: otpSecret.value,
+      otpDigits: otpDigits.value,
+      otpTime: otpTime.value,
+    }, null, updateEntryCounter);
+
+    updateEntryCounter++;
+  });
 }
 
 function generateFileContent(entries, passphrase) {
