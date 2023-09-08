@@ -1,5 +1,5 @@
 const secretfileVersion = 1; // Version of the secretfile format
-const appVersion = "1.1"; // Version of the app
+const appVersion = "1.2"; // Version of the app
 
 let entryCounter = 0;
 
