@@ -257,16 +257,20 @@ function loadFile(droppedFile) {
 }
 
 function loadEntriesFromFile(fileContent, passphrase) {
-  // Clear viewer and editor entries
-  document.querySelectorAll(".secretfileEditorEntry").forEach((entry) => {
-    entry.remove();
-    entryCounter--;
-  });
-  document.querySelectorAll(".secretfileViewerEntry").forEach((entry) => {
-    entry.remove();
-  });
+  clearAllEntries();
 
   let entries = fileContent.entries;
+  let metadata = fileContent.metadata;
+
+  // The metadata object is optional, and doesn't exist in files created with editor version < 1.2
+  if (metadata) {
+    document.getElementById("editorMetadata-owner").value = metadata.owner;
+    document.getElementById("editorMetadata-description").value =
+      metadata.description;
+    document.getElementById("viewerMetadata-owner").innerHTML = metadata.owner;
+    document.getElementById("viewerMetadata-description").innerHTML =
+      metadata.description;
+  }
 
   try {
     entries.forEach((entry) => {
@@ -325,6 +329,14 @@ function updateViewerFromEditor() {
 
   let updateEntryCounter = 1;
 
+  let editorMetadata = {
+    owner: document.querySelector("#editorMetadata-owner").value,
+    description: document.querySelector("#editorMetadata-description").value
+  }
+
+  document.querySelector("#viewerMetadata-owner").innerHTML = editorMetadata.owner;
+  document.querySelector("#viewerMetadata-description").innerHTML = editorMetadata.description;
+
   entries.querySelectorAll(".secretfileEditorEntry").forEach((entry) => {
     let accountName = entry.querySelector(`#secretfileEditorEntry-accountName`);
     let accountLogin = entry.querySelector(
@@ -351,10 +363,19 @@ function updateViewerFromEditor() {
 }
 
 function generateFileContent(entries, passphrase) {
+  let metadataOwner = document.getElementById("editorMetadata-owner").value;
+  let metadataDescription = document.getElementById(
+    "editorMetadata-description"
+  ).value;
+
   try {
     let secretFileContent = `{
   "version": ${secretfileVersion},
   "encrypted": ${passphrase ? true : false},
+  "metadata": {
+      "owner": "${metadataOwner}",
+      "description": "${metadataDescription}"
+  },
   "entries": [`;
     entries.querySelectorAll(".secretfileEditorEntry").forEach((entry, i) => {
       secretFileContent += `
@@ -488,6 +509,12 @@ function clearAllEntries() {
   document.querySelectorAll(".secretfileViewerEntry").forEach((entry) => {
     entry.remove();
   });
+  document.querySelectorAll(".secretfileMetadataField").forEach((field) => {
+    field.value = "";
+  });
+  document.getElementById("viewerMetadata-owner").innerHTML = "";
+  document.getElementById("viewerMetadata-description").innerHTML = "";
+
   updateEditor();
 }
 
