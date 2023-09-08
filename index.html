@@ -27,7 +27,7 @@
             <h1 class="d-inline align-middle">Hexandcube's Secretfile Editor </h1>
             <span class="badge rounded-pill text-bg-info fs-6 ml-5" id="version"><i
                     class="fa-solid fa-spinner fa-spin"></i></span>
-            <p>This simple app is an easy way to create, view, and edit Hexandcube Secretfiles, which
+            <p>This simple app is an easy way to create, view, and edit Secretfiles, which
                 store 2FA OTP secrets in a safe and easy to access way.</p>
         </div>
         </p>
@@ -127,20 +127,83 @@
             <section class="card tab-pane" id="pane-about" role="tabpanel">
                 <h2 class="card-header">About Secretfile Editor</h2>
                 <div class="card-body">
-                    <p>Secretfile editor is a simple tool that allows you to create, edit and view secretfiles - a
-                        special file format
-                        used for backing up 2FA OTP secrets. Secretfiles store the OTP secret, account name, and login.
-                        They can
-                        be encrypted with a passphrase (using AES-256).</p>
+                    <h2>What is the Secretfile Editor</h2>
+                    <p>Secretfile editor is a simple app that allows you to create, edit and view secretfiles - a
+                        special file format used for storing 2FA OTP secrets. Secretfiles store OTP secrets, OTP lenths, times, account names, and logins.
+                        They can be encrypted with a AES-256 bit key generated from a passphrase.</p>
                     <p>Secretfile editor has 2 modules:
                         <ul>
                             <li>Editor - allows you to create, edit, and save secretfiles.</li>
-                            <li>Viewer - allows you to view secretfiles, and easily import entries to your authenticator
+                            <li>Viewer - allows you to view, print, and easily import entries to your authenticator
                                 app.</li>
                         </ul>
                     </p>
-                    <p>Secretfile editor is fully open source. The source code is available to view on <a
+                    <p>Secretfile editor is fully open source, and written in plain JavaScript. The source code is available to view on <a
                             href="https://github.com/hexandcube/secretfile-editor">GitHub</a>.</p>
+
+                    <p>It's recommended to download and run the Secretfile Editor locally on your computer. <a href="https://codeload.github.com/hexandcube/secretfile-editor/zip/refs/heads/master">Download the zip file here</a>, extract it
+                    and open index.html in your web browser.</p>
+
+                <h2>The secretfile file format (version 1)</h2>
+
+                <p>A secretfile is a JSON file with the .secretfile.json file extension. Data is stored in the following format:</p>
+                <pre>
+                    <code>
+{
+  "version": 1,
+  "encrypted": false,
+  "metadata": {
+    "owner": "Hexandcube (hexandcube@hexandcube.eu.org)"
+    "description": "Hexandcube's Personal Accounts"
+  },
+  "entries": [
+    {
+      "entryId": 1,
+      "accountName": "Test Account 1",
+      "accountLogin": "example1@hexandcube.eu.org",
+      "otpSecret": "DFSDG2342624362463",
+      "otpDigits": 6,
+      "otpTime": 30
+    },
+    {
+      "entryId": 2,
+      "accountName": "Test Account 2",
+      "accountLogin": "example2@hexandcube.eu.org",
+      "otpSecret": "HEXTEST012223",
+      "otpDigits": 6,
+      "otpTime": 30
+    },
+    {
+      "entryId": 3,
+      "accountName": "Test Account 3",
+      "accountLogin": "example3@hexandcube.eu.org",
+      "otpSecret": "TST30922231",
+      "otpDigits": 8,
+      "otpTime": 60
+    }
+  ]
+}
+                    </code>
+                </pre>
+                <ul>
+                    <li><b>version</b> - Specifies the version of the secretfile format</li>
+                    <li><b>encrypted</b> - Specifies weather or not the entries in the file are encrypted</li>
+                    <li><b>metadata</b> - An object containg metadata about the current file. This object is optional, and doesn't exists in secretfiles generated before editor version 1.2</li>
+                    <ul>
+                        <li><b>owner</b> - The name or email identifing the owner of the secretfile</li>
+                        <li><b>description</b> - A short description of a secretfile</li>
+                    </ul>
+                    <li><b>entries</b> - An array of entries - each entry corresponds to a different user account</li>
+                    <ul>
+                        <li><b>entryId</b> - Unique entry identifier in the file</li>
+                        <li><b>accountName</b> - The name of the service the account is for (e.g. Google Account). This string can be encrypted.</li>
+                        <li><b>accountLogin</b> - Login (username/email address) of that exact account. This string can be encrypted.</li>
+                        <li><b>otpSecret</b> - The secret used for generation of OTP tokens. This string can be encrypted.</li>
+                        <li><b>otpDigits</b> - Length of the OTP tokens</li>
+                        <li><b>otpTime</b> - OTP token validity time in seconds</li>
+                    </ul>
+
+                </ul>
                 </div>
             </section>
         </div>
@@ -205,7 +268,9 @@
             <br>
             <a href="https://hexandcube.eu.org">Website</a> | <a
                 href="https://github.com/hexandcube/secretfile-editor">Source
-                code</a></p>
+                code</a> | <a
+                    href="https://codeload.github.com/hexandcube/secretfile-editor/zip/refs/heads/master">Download Secretfile Editor</a>
+        </p>
     </footer>
     <script src="app.js"></script>
     <script src="assets/js-otp/jsOTP.min.js"></script>
